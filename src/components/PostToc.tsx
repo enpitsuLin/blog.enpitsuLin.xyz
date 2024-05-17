@@ -1,14 +1,40 @@
-import type { Link, List, ListItem, Paragraph, Text } from 'mdast';
-import { type Component, createEffect, createSignal } from 'solid-js';
+import type { MarkdownHeading } from 'astro';
+import type { Link, List, Paragraph, Text } from 'mdast';
+import { For, createEffect, createSignal, type Component } from 'solid-js';
 
-function getRecursionIds(item: List | ListItem | Paragraph | Link | Text): string[] {
-  if (item.type === 'text') return []
-  if (item.type === 'link') return [item.url.slice(1)]
+interface TocItem extends MarkdownHeading {
+  children: TocItem[];
+}
 
-  return item
-    .children
-    .map((item) => getRecursionIds(item as List | ListItem | Paragraph))
-    .flat()
+interface TocOpts {
+  maxHeadingLevel?: number | undefined;
+  minHeadingLevel?: number | undefined;
+}
+
+/** Inject a ToC entry as deep in the tree as its `depth` property requires. */
+function injectChild(items: TocItem[], item: TocItem): void {
+  const lastItem = items.at(-1);
+  if (!lastItem || lastItem.depth >= item.depth) {
+    items.push(item);
+  } else {
+    injectChild(lastItem.children, item);
+    return;
+  }
+}
+
+export function generateToc(
+  headings: ReadonlyArray<MarkdownHeading>,
+  { maxHeadingLevel = 4, minHeadingLevel = 2 }: TocOpts = {},
+) {
+  // by default this ignores/filters out h1 and h5 heading(s)
+  const bodyHeadings = headings.filter(
+    ({ depth }) => depth >= minHeadingLevel && depth <= maxHeadingLevel,
+  );
+  const toc: Array<TocItem> = [];
+
+  for (const heading of bodyHeadings) injectChild(toc, { ...heading, children: [] });
+
+  return toc;
 }
 
 function useActiveId(itemIds: string[]) {
@@ -42,46 +68,38 @@ function useActiveId(itemIds: string[]) {
   return activeId;
 }
 
-function renderItems(items: List, activeId: string, prefix = '') {
+const TocHeading: Component<{ toc: TocItem, activeSlug: string }> = (props) => {
   return (
-    <ol class="overflow-y-auto max-h-65vh" classList={{ 'pl-5': prefix != '' }}>
-      {items?.children?.map((item, index) => (
-        <li>
-          {item.children
-            .filter((i): i is Paragraph | List => ['paragraph', 'list'].includes(i.type))
-            .map((listOrParagraph) => {
-              if (listOrParagraph.type === 'list') return (
-                <span>
-                  {renderItems(listOrParagraph, activeId, `${index + 1}.`)}
-                </span>
-              )
-              const link = (listOrParagraph.children[0] as Link)
-              const children = link.children as Text[];
-              const content = children.reduce((acc, curr) => acc + curr.value, '');
-
-              return (
-                <span>
-                  <a
-                    href={link.url}
-                    title={content}
-                    aria-hidden={activeId !== link.url.slice(1)}
-                    class={`${activeId === link.url.slice(1)
-                      ? 'text-neutral-700 dark:text-neutral '
-                      : 'text-neutral dark:text-neutral-700'
-                      } truncate inline-block max-w-full align-bottom hover:text-neutral`}
-                  >
-                    {`${prefix}${index + 1}. ${content}`}
-                  </a>
-                </span>
-              );
-            })}
-        </li>
-      ))}
-    </ol>
-  );
+    <li
+      classList={{
+        'ml-2': props.toc.depth > 2
+      }}
+    >
+      <a
+        aria-label={`Scroll to section: ${props.toc.text}`}
+        class="block line-clamp-2 hover:text-neutral"
+        classList={{
+          'mt-3': props.toc.depth <= 2,
+          "mt-3 text-0.75rem": props.toc.depth > 2,
+          "text-neutral-700 dark:text-neutral": props.activeSlug === props.toc.slug
+        }}
+        href={`#${props.toc.slug}`}
+      >
+        <span class='mr-0.5'></span>
+        # {props.toc.text}
+      </a>
+      {!!props.toc.children && (
+        <ul>
+          <For each={props.toc.children}>
+            {item => (<TocHeading toc={item} activeSlug={props.activeSlug} />)}
+          </For>
+        </ul>
+      )}
+    </li>
+  )
 }
 
-export const PostToc: Component<{ data: List }> = (props) => {
+export const PostToc: Component<{ headings: MarkdownHeading[] }> = (props) => {
   let containerRef: HTMLDivElement | undefined;
 
   const [maxWidth, setMaxWidth] = createSignal(0);
@@ -95,8 +113,9 @@ export const PostToc: Component<{ data: List }> = (props) => {
       );
     }
   });
-  const idList = getRecursionIds(props.data);
-  const activeId = useActiveId(idList);
+
+  const toc = generateToc(props.headings)
+  const activeSlug = useActiveId(props.headings.map(i => i.slug));
 
   return (
     <div
@@ -111,7 +130,11 @@ export const PostToc: Component<{ data: List }> = (props) => {
       }}
     >
       <div class="sticky top-14 text-sm truncate leading-loose">
-        {renderItems(props.data, activeId())}
+        <ul class="mt-4 text-xs">
+          <For each={toc}>
+            {(item) => <TocHeading toc={item} activeSlug={activeSlug()} />}
+          </For>
+        </ul>
       </div>
     </div>
   );

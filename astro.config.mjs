@@ -83,12 +83,6 @@ const rehypePlugins = [
 export default defineConfig({
   site: 'https://enpitsulin.xyz',
   integrations: [mdx(), sitemap(), Unocss(), solidJs()],
-  markdown: {
-    gfm: true,
-    syntaxHighlight: false,
-    remarkPlugins,
-    rehypePlugins
-  },
   output: "server",
   adapter: cloudflare()
 });

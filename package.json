@@ -4,7 +4,7 @@
   "type": "module",
   "version": "0.0.1",
   "license": "MIT",
-  "packageManager": "pnpm@8.15.4",
+  "packageManager": "pnpm@8.15.9",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

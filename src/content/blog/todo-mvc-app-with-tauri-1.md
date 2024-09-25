@@ -4,6 +4,7 @@ date: 2022-05-02 17:29:00
 tags: [Rust,Tauri]
 excerpt: rust太难学了？学习了rust不会实践？简单使用 Tauri 搭建经典实战项目TodoMVC 来做实践吧。你会发现rust真的很好玩，tauri也是非常的快，转变思维使用rust来写代码真的很爽。
 ---
+
 Rust 学的一头雾水？错，是太难了根本学不会，直接上实践就完事了。就用学习一个框架最经典的实战项目 TodoMVC，我们实现一个 rust+sqlite 做后端 、react 做前端的~~跨平台~~桌面端 app
 
 ## 创建 Tauri 项目
@@ -53,7 +54,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 然后新建 components 目录并创建 TodoItem 组件
 
 ```tsx:src/components/TodoItem.tsx
-const TodoItem = () => {
+function TodoItem() {
   return (
     <li>
       <div className="view">
@@ -71,7 +72,7 @@ export default TodoItem
 
 ```tsx:src/components/TodoList.tsx
 import TodoItem from './TodoItem'
-const TodoList = () => {
+function TodoList() {
   return (
     <>
       <header className="header">
@@ -87,7 +88,9 @@ const TodoList = () => {
       </section>
       <footer className="footer">
         <span className="todo-count">
-          <strong>1</strong> items left
+          <strong>1</strong>
+          {' '}
+          items left
         </span>
         <ul className="filters">
           <li>

@@ -4,6 +4,7 @@ date: 2022-04-02 17:24:00
 tags: [Server]
 excerpt: 一年前的为了毕业设计买的学生机，现在续了一下，因为原先安装的 linux发行版 centos8 已经宣布停止生命周期了，重新装个Debian用于学习然后重新折腾一下服务器，简单再部署一些小东西玩玩。
 ---
+
 # 配置终端
 
 肯定是 zsh+oh-my-zsh 啦
@@ -57,7 +58,6 @@ NGINX_DIR=/home/enpitsulin/docker-data/nginx
 ID=`docker ps -a| grep nginx | awk '{print $1}'`
 docker stop $ID
 docker rm $ID
-
 
 docker run --detach --name nginx_tmp nginx
 sleep 5

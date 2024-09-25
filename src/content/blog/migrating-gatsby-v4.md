@@ -4,6 +4,7 @@ date: 2021-10-29 10:50:00
 tags: [Blog, Gatsby]
 excerpt: gatsby v4 发布了，将依赖升级简单迁移一下
 ---
+
 前几天 [gatsby v4](https://github.com/gatsbyjs/gatsby/releases/tag/gatsby%404.0.0) 算是正式发布了，在 **beta** 阶段就一致在关注，因为本身博客是由其搭建的，还有这种版本更新可以看看 unofficial 的插件有没有存在跟不上更新的情况 ~~可以蹭几条 pr（雾~~
 
 于是花了参考[文档](https://www.gatsbyjs.com/docs/reference/release-notes/migrating-from-v3-to-v4/)花了点时间简单的迁移了一下，还有把简单的几个插件自己实现了。

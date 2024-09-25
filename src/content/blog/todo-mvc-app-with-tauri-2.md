@@ -41,14 +41,15 @@ export const allTodosAtom = atom<Todo[]>([])
 /** 未被软删除的todos */
 export const todosAtom = atom<Todo[]>((get) => {
   const todos = get(allTodosAtom)
-  return todos.filter((todo) => !todo.is_delete)
+  return todos.filter(todo => !todo.is_delete)
 })
 
 /** 经过过滤的todos */
 export const filterAtom = atom((get) => {
   const todos = get(todosAtom)
   return todos.filter((todo) => {
-    if (get(filterType) === 'all') return true
+    if (get(filterType) === 'all')
+      return true
     return todo.done === (get(filterType) === 'completed')
   })
 })
@@ -56,13 +57,13 @@ export const filterAtom = atom((get) => {
 /** 方便使用的统计未完成的todo数量的原子 */
 export const activeTodoCountAtom = atom((get) => {
   const todos = get(todosAtom)
-  return todos.filter((todo) => !todo.done).length
+  return todos.filter(todo => !todo.done).length
 })
 
 /** 也是方便实用的检查是否有todo完成的原子 */
 export const anyTodosDone = atom((get) => {
   const todos = get(todosAtom)
-  return todos.some((todo) => todo.done)
+  return todos.some(todo => todo.done)
 })
 ```
 
@@ -76,7 +77,7 @@ export const anyTodosDone = atom((get) => {
 
 ```tsx:src/component/TodoItem.tsx
 import { Todo } from './types/todo'
-const TodoItem: React.FC<{ todo:Todo }> = ({ todo }) => {
+const TodoItem: React.FC<{ todo: Todo }> = ({ todo }) => {
   return (
     <li>
       <div className="view">
@@ -93,9 +94,9 @@ export default TodoItem
 以及 TodoList
 
 ```tsx:src/component/TodoList.tsx
-import { Todo } from './types/todo'
 import TodoItem from './TodoItem'
-const TodoList:React.FC<{ todos: Todo[] }> = ({ todos }) => {
+import { Todo } from './types/todo'
+const TodoList: React.FC<{ todos: Todo[] }> = ({ todos }) => {
   return (
     <>
       <header className="header">
@@ -106,14 +107,16 @@ const TodoList:React.FC<{ todos: Todo[] }> = ({ todos }) => {
         <input type="checkbox" className="toggle-all" />
         <label htmlFor="togle-all"></label>
         <ul className="todo-list">
-          {todos.map((todo) => (
+          {todos.map(todo => (
             <TodoItem key={todo.id} todo={todo} />
           ))}
         </ul>
       </section>
       <footer className="footer">
         <span className="todo-count">
-          <strong>1</strong> items left
+          <strong>1</strong>
+          {' '}
+          items left
         </span>
         <ul className="filters">
           <li>
@@ -153,7 +156,7 @@ function App() {
   }, [])
   return (
     <div className="todoapp">
-      <TodoList todos={todos}/>
+      <TodoList todos={todos} />
     </div>
   )
 }
@@ -170,13 +173,13 @@ export default App
 所以修改 TodoList 让其中的 input 标签起作用以及过滤用的 a 标签能够控制 filterTypeAtom
 
 ```tsx:src/component/TodoList.tsx
+import { invoke } from '@tauri-apps/api'
 import { useAtom } from 'jotai'
+import { KeyboardEventHandler, useCallback, useState } from 'react'
 import { v4 as randomUUID } from 'uuid'
-import { useState, useCallback, KeyboardEventHandler } from 'react'
 import { activeTodoCountAtom, allTodosAtom, anyTodosDone, filterType } from '../store/todos'
 import { Todo } from '../types/todo'
 import TodoItem from './TodoItem'
-import { invoke } from '@tauri-apps/api'
 
 const TodoList: React.FC<{ todos: Todo[] }> = ({ todos }) => {
   const [, setTodos] = useAtom(allTodosAtom)
@@ -240,14 +243,16 @@ const TodoList: React.FC<{ todos: Todo[] }> = ({ todos }) => {
         <input type="checkbox" className="toggle-all" />
         <label htmlFor="togle-all"></label>
         <ul className="todo-list">
-          {todos.map((todo) => (
+          {todos.map(todo => (
             <TodoItem key={todo.id} todo={todo} />
           ))}
         </ul>
       </section>
       <footer className="footer">
         <span className="todo-count">
-          <strong>{activeCount}</strong> items left
+          <strong>{activeCount}</strong>
+          {' '}
+          items left
         </span>
         <ul className="filters">
           <li>
@@ -289,14 +294,14 @@ export default TodoList
 最终组件代码如下，我额外使用了 react-use 和 use-debounce 这两个包的一些 hook。~~本来是想自己写的，写了一个就摆了，useDoubleClick 可以看最后仓库代码~~
 
 ```tsx:src/component/TodoItem.tsx
+import { invoke } from '@tauri-apps/api'
 import { useAtom } from 'jotai'
 import { ChangeEventHandler, KeyboardEventHandler, useCallback, useRef, useState } from 'react'
 import { useClickAway } from 'react-use'
 import { useDebouncedCallback } from 'use-debounce'
+import { useDoubleClick } from '../hooks/useDoubleClick'
 import { allTodosAtom } from '../store/todos'
 import { Todo } from '../types/todo'
-import { useDoubleClick } from '../hooks/useDoubleClick'
-import { invoke } from '@tauri-apps/api'
 
 const TodoItem: React.FC<{ todo: Todo }> = ({ todo }) => {
   const [, setTodos] = useAtom(allTodosAtom)

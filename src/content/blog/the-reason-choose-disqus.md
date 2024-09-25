@@ -4,6 +4,7 @@ date: 2022-04-22 09:40:00
 tags: [Blog, Disqus]
 excerpt: 作为静态博客的评论系统，Disqus 是一个非常好的选择。但实际上有多种多样的选择，比如：基于Git issues 的 gitalk, 或是基于 Discussions 的 Discus，还有Valine和开源的Waline。其实选择很多但是为什么我会选择Disqus呢？
 ---
+
 静态博客的好处有很多，但是实际上不太适合不爱折腾的人群，需要很多技术方面的攻关才能实现动态网站可能简单几次点击就能集成的功能。
 
 比如评论系统

@@ -1,15 +1,15 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "strictNullChecks": true,
     "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "baseUrl": ".",
     "paths": {
       "~/*": [
         "src/*"
       ]
     },
-    "jsxImportSource": "solid-js"
+    "strictNullChecks": true
   },
   "exclude": [
     "astro.config.mjs"

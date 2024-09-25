@@ -4,6 +4,7 @@ date: 2021-09-26 20:21:00
 tags: [JavaScript, TypeScript]
 excerpt: 在现代前端项目中使用 ts 以及成为常态, 但是在很多还是只能使用 JavaScript 的项目中也往往也很需要静态类型检查, 但因为一些原因快速引入 ts 不太现实, 使用Jsdoc来标注类型可能是一种解决方法。
 ---
+
 在现代前端项目中使用 ts 以及成为常态~~TypeScript 成为事实上的 JavaScript,JS 大呼不可战胜~~
 
 但是在很多还是只能使用 JavaScript 的项目中也往往也很需要静态类型检查，但快速引入 ts 不太现实，甚至 Vue2 的一些项目引入 TS 效果反而不好。
@@ -20,7 +21,7 @@ jsdoc 提供了一种非侵入式的手段为项目增加类型检查，但是�
  * @param id 用户id
  */
 function deleteUser(id) {
-  //...
+  // ...
 }
 ```
 
@@ -82,7 +83,7 @@ const onePerson = { name: 'unknown', sex: 'male' }
 
 ```typescript
 const CURRENT_YEAR: number = 2021
-const onePerson: { name: string; sex: 'male' | 'female' } = { name: 'unknown', sex: 'male' }
+const onePerson: { name: string, sex: 'male' | 'female' } = { name: 'unknown', sex: 'male' }
 ```
 
 大多数 ts 的用法都是支持的 比如 tagName 为 HTML 标签的类型
@@ -110,7 +111,7 @@ jsdoc 中可以使用仅使用注释编写的文件来完成自定义类型的�
 于是可以在其他 js 文件中使用这个`Person`类型,相当于 ts 中
 
 ```typescript
-//Person.d.ts
+// Person.d.ts
 interface Person {
   name: string
   nickname?: string
@@ -134,24 +135,24 @@ interface Person {
  * @namespace React
  */
 
-//然后对虚拟类型注释声明其命名空间
+// 然后对虚拟类型注释声明其命名空间
 
 /**
  * @typedef {keyof HTMLElementTagNameMap} React.ElementNode
  * @memberof React
  */
 
-//然后就能使用`React.ElementNode`类型避免冲突了
+// 然后就能使用`React.ElementNode`类型避免冲突了
 ```
- 
- ### 泛型类型
+
+### 泛型类型
 
 基础类型无法满足需求可以使用`@template`来定义泛型
 
 ```javascript
 /**
  * @template T
- * @typedef {Object} generics
+ * @typedef {object} generics
  * @property {T} value
  * @property {name} string
  */

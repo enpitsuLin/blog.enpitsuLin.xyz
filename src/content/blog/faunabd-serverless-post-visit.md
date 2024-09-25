@@ -4,6 +4,7 @@ date: 2022-04-12 15:04:00
 tags: [Blog, Serverless]
 excerpt: 对于基于Nextjs的静态站点生成计数的博客，为文章增加阅读计数功能不同于基于Wordpress等CMS框架的博客，但是如果使用Vercel等支持serverless函数的托管平台，我们可以比较轻易的集成一些数据库服务来做阅读计数功能。
 ---
+
 博客由于全站都是静态导出的页面，没有后台服务器的接口支持，所以增加阅读计数这种简单的功能也无法实现
 
 但是由于 [JAMStack](https://jamstack.org/) 概念的普及以及 Serverless 这个概念的出现一些网站托管平台如 Vercel/Netlify 均提供了 Serverless 函数服务，可以让我们的静态网站更简单的去集成一些 BaaS 来增加网站功能。
@@ -111,47 +112,47 @@ pnpm add faunadb
 这里仅实现 Nextjs ，其他的静态生成器不是很熟就不献丑了
 
 ```ts:/pages/api/get-visit.ts
-import { NextApiHandler } from "next";
-import { Client, query as q } from "faunadb";
+import { Client, query as q } from 'faunadb'
+import { NextApiHandler } from 'next'
 
 interface Visit {
-  count: number;
-  slug: string;
+  count: number
+  slug: string
 }
 
 const client = new Client({
   secret: process.env.FAUNADB_SECRET
-});
+})
 
 const handler: NextApiHandler = async (req, res) => {
-  const slug = req.query.slug as string;
+  const slug = req.query.slug as string
   if (!slug) {
     res.status(400).json({
-      message: "slug is required"
-    });
+      message: 'slug is required'
+    })
   }
-  const isSlugExist = await client.query(q.Exists(q.Match(q.Index("visit_by_slug"), slug)));
+  const isSlugExist = await client.query(q.Exists(q.Match(q.Index('visit_by_slug'), slug)))
   if (!isSlugExist) {
     client.query(
-      q.Create(q.Collection("visit"), {
+      q.Create(q.Collection('visit'), {
         data: {
           slug,
           count: 0
         }
       })
-    );
+    )
   }
 
-  const document = await client.query<{ ref: string; data: Visit }>(q.Get(q.Match(q.Index("visit_by_slug"), slug)));
-  await client.query(q.Update(document.ref, { data: { count: document.data.count + 1 } }));
+  const document = await client.query<{ ref: string, data: Visit }>(q.Get(q.Match(q.Index('visit_by_slug'), slug)))
+  await client.query(q.Update(document.ref, { data: { count: document.data.count + 1 } }))
 
   res.status(200).json({
-    message: "get post visit success",
+    message: 'get post visit success',
     count: document.data.count
-  });
-};
+  })
+}
 
-export default handler;
+export default handler
 ```
 
 ## 展示到页面上
@@ -163,7 +164,7 @@ export default handler;
 ```tsx:/src/components/PostHeader.tsx {13-20,53-58}
 import formatDate from '@/lib/utils/formatDate'
 import { PostFrontMatter } from '@/types/PostFrontMatter'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import PageTitle from './PageTitle'
 import Tag from './Tag'
 
@@ -177,46 +178,54 @@ const PostHeader: React.FC<Props> = ({ frontMatter }) => {
 
   useEffect(() => {
     fetch(`/api/get-visit?slug=${slug}`).then(async (response) => {
-      const data = (await response.json()) as { count: number; message: string }
+      const data = (await response.json()) as { count: number, message: string }
       setVisit(data.count)
     })
   }, [])
   return (
     <header className="pt-6 xl:pb-6">
-      <div className="space-y-12 text-center">
+      <div className="text-center space-y-12">
         <PageTitle>{title}</PageTitle>
         <div className="pb-6">
-          <dl className="flex justify-center flex-wrap space-x-4">
+          <dl className="flex flex-wrap justify-center space-x-4">
             <div>
               <dt className="sr-only">Tags</dt>
-              <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-                {tags.map((tag) => (
+              <dd className="text-base text-gray-500 font-medium leading-6 dark:text-gray-400">
+                {tags.map(tag => (
                   <Tag key={tag} text={tag} />
                 ))}
               </dd>
             </div>
             <div>
               <dt className="sr-only">Published on</dt>
-              <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
+              <dd className="text-base text-gray-500 font-medium leading-6 dark:text-gray-400">
                 <time dateTime={date}>{formatDate(date)}</time>
               </dd>
             </div>
             <div>
               <dt className="sr-only">Reading time</dt>
-              <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-                {Math.round(readingTime.minutes)} 分钟阅读
+              <dd className="text-base text-gray-500 font-medium leading-6 dark:text-gray-400">
+                {Math.round(readingTime.minutes)}
+                {' '}
+                分钟阅读
               </dd>
             </div>
             <div>
               <dt className="sr-only">Word count</dt>
-              <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-                约 {readingTime.words} 字
+              <dd className="text-base text-gray-500 font-medium leading-6 dark:text-gray-400">
+                约
+                {' '}
+                {readingTime.words}
+                {' '}
+                字
               </dd>
             </div>
             <div>
               <dt className="sr-only">Reads</dt>
-              <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-                {visit} 次阅读
+              <dd className="text-base text-gray-500 font-medium leading-6 dark:text-gray-400">
+                {visit}
+                {' '}
+                次阅读
               </dd>
             </div>
           </dl>

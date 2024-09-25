@@ -49,7 +49,8 @@ clipLayer.getSource().on('addfeature', ()=> {
 
 ```typescript
 baseLayer.on('postrender', (evt) => {
-  if (!evt.context || !('save' in evt.context)) return
+  if (!evt.context || !('save' in evt.context))
+    return
   const vecCtx = getVectorContext(evt)
   evt.context.globalCompositeOperation = 'destination-in'
   clipLayer.getSource().forEachFeature((feature) => {

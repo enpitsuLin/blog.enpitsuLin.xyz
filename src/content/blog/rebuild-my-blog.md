@@ -4,6 +4,7 @@ date: 2022-03-30 09:34:00
 tags: [Blog, Nextjs, Tailwind]
 excerpt: 又到了一年一度鼓捣博客的时间咳咳，因为升级 gatsby 导致仓库收到太多依赖警告了，同时意识到大而全的框架的一些缺点，所以决定抛弃 Gatsby 转而使用 Nextjs
 ---
+
 又到了一年一度鼓捣博客的时间~~咳咳~~，因为升级 gatsby 导致仓库收到太多依赖警告了，同时意识到大而全的框架的一些缺点，所以决定抛弃 Gatsby 转而使用 Nextjs
 
 # Gatsby vs Nextjs

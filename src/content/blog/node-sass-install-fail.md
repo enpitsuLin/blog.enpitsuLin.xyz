@@ -6,7 +6,7 @@ updateDate: 2022-03-29 14:23:00
 excerpt: 由于某些不可描述的原因,使用node包管理器安装node-sass无论什么环境下总是会出现下载安装失败...
 ---
 
-> node-sass *[已经被废弃](https://sass-lang.com/blog/libsass-is-deprecated)*，dart-sass 是官方推荐的选择，也不会遇到本文的问题 现在 npm 上安装 sass 默认已经是 dart-sass 了 —— 2022-3-29
+> node-sass _[已经被废弃](https://sass-lang.com/blog/libsass-is-deprecated)_，dart-sass 是官方推荐的选择，也不会遇到本文的问题 现在 npm 上安装 sass 默认已经是 dart-sass 了 —— 2022-3-29
 
 # node-sass
 

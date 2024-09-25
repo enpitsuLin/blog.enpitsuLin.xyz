@@ -58,16 +58,16 @@ pnpm add -D @types/node @types/react @types/react-dom typescript windicss windic
 在项目根目录下新建`next.config.js`
 
 ```js:next.config.js
-const WindiCSSWebpackPlugin = require("windicss-webpack-plugin");
+const WindiCSSWebpackPlugin = require('windicss-webpack-plugin')
 
 /** @type {import('next').NextConfig} */
 const config = {
   webpack(config) {
-    config.plugins.push(new WindiCSSWebpackPlugin());
-    return config;
+    config.plugins.push(new WindiCSSWebpackPlugin())
+    return config
   }
-};
-module.exports = config;
+}
+module.exports = config
 ```
 
 然后我们新建一个 pages 目录用于放置 nextjs 基于约定的路由页面, 里面新建`_app.tsx`文件
@@ -75,10 +75,10 @@ module.exports = config;
 在顶端引入`import 'windi.css'`并[自定义 App](https://nextjs.org/docs/advanced-features/custom-app)
 
 ```tsx:pages/_app.tsx
-import "windi.css";
-import { AppProps } from "next/app";
-import { ThemeProvider } from "next-themes";
-import Head from "next/head";
+import { AppProps } from 'next/app'
+import Head from 'next/head'
+import { ThemeProvider } from 'next-themes'
+import 'windi.css'
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
@@ -89,10 +89,10 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
       </Head>
       <Component {...pageProps}></Component>
     </ThemeProvider>
-  );
-};
+  )
+}
 
-export default App;
+export default App
 ```
 
 ## 创建页面
@@ -102,9 +102,9 @@ export default App;
 ```tsx:pages/index.tsx
 const Home: React.FC<Props> = ({ records }) => {
   return <div></div>
-};
+}
 
-export default Home;
+export default Home
 ```
 
 ## 创建组件
@@ -114,12 +114,12 @@ export default Home;
 ```tsx:components/card.tsx
 const Card: React.FC = () => {
   return (
-    <section className="pb-10 relative before:(border-l-2 inset-y-0 -left-30px absolute content-open-quote) first:before:top-1 last:before:bottom-10">
-        content
+    <section className="before:content-open-quote relative pb-10 before:(absolute inset-y-0 border-l-2 -left-30px) first:before:top-1 last:before:bottom-10">
+      content
     </section>
-  );
-};
-export default Card;
+  )
+}
+export default Card
 ```
 
 然后我们先定义一个 interface 用于描述记录的信息,顺便导出一下
@@ -148,8 +148,8 @@ export interface RecordItem {
 如果选择 SSG 的话,可以直接使用 img 标签以及把对应的图片资源放在 public 下做[静态文件服务](https://nextjs.org/docs/basic-features/static-file-serving)或者使用图床链接~~如果准备托管到 Vercel 就直接使用 Image 组件~~
 
 ```tsx:components/card.tsx
-import Image from "next/image";
-import { useState } from "react";
+import Image from 'next/image'
+import { useState } from 'react'
 
 export interface RecordItem {
   /** 名称 */
@@ -168,51 +168,55 @@ export interface RecordItem {
   comment: string
 }
 
-const Score: React.FC<Pick<RecordItem, "score">> = ({ score }) => {
+const Score: React.FC<Pick<RecordItem, 'score'>> = ({ score }) => {
   switch (score) {
     case 1:
-      return <big className="font-bold text-gray-500">🍅 烂</big>;
+      return <big className="text-gray-500 font-bold">🍅 烂</big>
     case 2:
-      return <big className="font-bold text-green-500">🥱 无聊</big>;
+      return <big className="text-green-500 font-bold">🥱 无聊</big>
     case 3:
-      return <big className="font-bold text-blue-500">🤔 还行</big>;
+      return <big className="text-blue-500 font-bold">🤔 还行</big>
     case 4:
-      return <big className="font-bold text-violet-500">🤩 值得一看</big>;
+      return <big className="text-violet-500 font-bold">🤩 值得一看</big>
     case 5:
-      return <big className="font-bold text-orange-500">💯 神作！</big>;
+      return <big className="text-orange-500 font-bold">💯 神作！</big>
   }
-};
+}
 
-const renderType = (type: RecordItem["type"]) => {
+function renderType(type: RecordItem['type']) {
   const typeMap = {
-    movie: "电影",
-    tv: "剧集",
-    book: "书籍",
-    anime: "动漫"
-  };
-  return typeMap[type] ?? "未知";
-};
+    movie: '电影',
+    tv: '剧集',
+    book: '书籍',
+    anime: '动漫'
+  }
+  return typeMap[type] ?? '未知'
+}
 
 export const Card: React.FC<RecordItem> = (props) => {
-  const [loading, setLoading] = useState(true);
-  const loadingClasses =
-    "backdrop-filter backdrop-grayscale backdrop-blur-lg transform  scale-110 hover:opacity-75 duration-300 ease-in-out";
-  const loadedClasses =
-    "backdrop-filter backdrop-grayscale-0 backdrop-blur-0 transform  scale-100 hover:opacity-75 duration-300 ease-in-out";
-  const classes = loading ? loadingClasses : loadedClasses;
+  const [loading, setLoading] = useState(true)
+  const loadingClasses
+    = 'backdrop-filter backdrop-grayscale backdrop-blur-lg transform  scale-110 hover:opacity-75 duration-300 ease-in-out'
+  const loadedClasses
+    = 'backdrop-filter backdrop-grayscale-0 backdrop-blur-0 transform  scale-100 hover:opacity-75 duration-300 ease-in-out'
+  const classes = loading ? loadingClasses : loadedClasses
 
   return (
-    <section className="pb-10 relative before:(border-l-2 inset-y-0 -left-30px absolute content-open-quote) first:before:top-1 last:before:bottom-10 ">
-      <p className="text-sm mb-2 relative sm:text-base sm:mb-3">
+    <section className="before:content-open-quote relative pb-10 before:(absolute inset-y-0 border-l-2 -left-30px) first:before:top-1 last:before:bottom-10">
+      <p className="relative mb-2 text-sm sm:mb-3 sm:text-base">
         {new Date(props.date).toLocaleDateString()}
 
-        <i className="rounded-full bg-gray-200 h-4 transform top-1/2 -left-9 w-4 translate-y-[-50%] absolute" />
+        <i className="absolute top-1/2 h-4 w-4 translate-y-[-50%] transform rounded-full bg-gray-200 -left-9" />
       </p>
       <div className="flex justify-between">
-        <div className="flex-1 mr-2">
-          <p className="text-md mb-2 leading-6 sm:mb-3 sm:text-2xl ">
+        <div className="mr-2 flex-1">
+          <p className="text-md mb-2 leading-6 sm:mb-3 sm:text-2xl">
             {props.title}
-            <span>（{props.year}）</span>
+            <span>
+              （
+              {props.year}
+              ）
+            </span>
           </p>
 
           <p className="text-base md:text-sm">
@@ -225,9 +229,9 @@ export const Card: React.FC<RecordItem> = (props) => {
             {renderType(props.type)}
           </p>
 
-          <div className="mt-4 text-sm md:text-x text-gray-700 dark:text-gray-300">{props.comment}</div>
+          <div className="md:text-x mt-4 text-sm text-gray-700 dark:text-gray-300">{props.comment}</div>
         </div>
-        <div className="rounded-xl w-87px overflow-hidden md:rounded-md">
+        <div className="w-87px overflow-hidden rounded-xl md:rounded-md">
           <Image
             src={props.cover}
             layout="fixed"
@@ -241,26 +245,26 @@ export const Card: React.FC<RecordItem> = (props) => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 ```
 
 如果使用了 next/image 组件，我们需要修改一下 next.config.js 文件，添加[图片域名配置](https://nextjs.org/docs/api-reference/next/image#domains),添加封面图片可能的域名
 
 ```js:next.config.js {9-11}
-const WindiCSSWebpackPlugin = require("windicss-webpack-plugin");
+const WindiCSSWebpackPlugin = require('windicss-webpack-plugin')
 
 /** @type {import('next').NextConfig} */
 const config = {
   webpack(config) {
-    config.plugins.push(new WindiCSSWebpackPlugin());
-    return config;
+    config.plugins.push(new WindiCSSWebpackPlugin())
+    return config
   },
   images: {
-    domains: ["img1.doubanio.com", "img2.doubanio.com", "img3.doubanio.com", "img9.doubanio.com"]
+    domains: ['img1.doubanio.com', 'img2.doubanio.com', 'img3.doubanio.com', 'img9.doubanio.com']
   }
-};
-module.exports = config;
+}
+module.exports = config
 ```
 
 然后可以在 pages/index.tsx 设置看看效果
@@ -282,9 +286,9 @@ const Home: React.FC<Props> = ({ records }) => {
       />
     </div>
   )
-};
+}
 
-export default Home;
+export default Home
 ```
 
 ## 设置和获取数据
@@ -332,8 +336,8 @@ import { Octokit } from '@octokit/core'
 const octokit = new Octokit({ auth: process.env.GIT_TOKEN })
 
 export async function getRecords() {
-    const res = await octokit.request("GET /gists/{gist_id}", { gist_id: process.env.GIST_ID })
-    return res
+  const res = await octokit.request('GET /gists/{gist_id}', { gist_id: process.env.GIST_ID })
+  return res
 }
 ```
 
@@ -348,51 +352,52 @@ export async function getRecords() {
 使用 getStaticProps 则只能获取在每次构建的时候的数据,用于 ssg 最好但是数据不及时
 
 ```tsx:pages/index.tsx {2-33,35,38-40}
-import { Card } from "components/Crad";
-import { GetStaticProps } from "next";
-import { getRecords } from "lib/get-records";
-import { RecordItem } from "types/records";
+import { Card } from 'components/Crad'
+import { getRecords } from 'lib/get-records'
+import { GetStaticProps } from 'next'
+import { RecordItem } from 'types/records'
 
 interface Props {
-  records: RecordItem[];
+  records: RecordItem[]
 }
 
 function filterTruthy<T>(x: T | false): x is T {
-  return Boolean(x);
+  return Boolean(x)
 }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const { data } = await getRecords();
+  const { data } = await getRecords()
   const records = Object.keys(data.files)
     .map((key) => {
       try {
-        return JSON.parse(data.files[key].content) as RecordItem;
-      } catch (error) {
-        return false;
+        return JSON.parse(data.files[key].content) as RecordItem
+      }
+      catch (error) {
+        return false
       }
     })
-    .filter(filterTruthy);
+    .filter(filterTruthy)
 
   return {
     props: {
       records: records.sort((a, b) => {
-        return new Date(a.date) < new Date(b.date) ? 1 : -1;
+        return new Date(a.date) < new Date(b.date) ? 1 : -1
       })
     }
-  };
-};
+  }
+}
 
 const Home: React.FC<Props> = ({ records }) => {
   return (
     <div>
-      {records.map((record) => (
+      {records.map(record => (
         <Card {...record} key={record.title} />
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
 ```
 
 使用 getServerSideProps 的话则和 getStaticProps 基本一致但是需要托管在平台上或者自己部署

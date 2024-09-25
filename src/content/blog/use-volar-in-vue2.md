@@ -4,6 +4,7 @@ date: 2021-10-17 22:32:00
 tags: [Vue]
 excerpt: 虽然Vue已经发布,但是仍然有很多项目使用Vue2。在使用Vue2进行开发的情况下,选择更好的方式来开发以及使用一些新的技术来提升开发体验和开发效率。
 ---
+
 公司项目除了由我创建的基本都是 Vue2 项目，众所周知 Vue2 原先的插件 Vetur 需要开启`"vetur.experimental.templateInterpolationService"`选项才能提供模板中代码补全的能力，增加`@vue/composition-api`也是可以使用的,但是增加上用于解决使用 composition-api 造成 return 的变量过多问题的`unplugin-vue2-script-setup`就不太好使了,所以需要引入一些东西来增强这种开发环境下的体验。
 
 # Vue2 使用 composition-api
@@ -52,21 +53,21 @@ npm install -D @vue/runtime-dom
 
 ```html
 <script>
-import { defineComponent } from '@vue/composition-api'
-import HelloWorld from './components/HelloWorld.vue'
+  import { defineComponent } from '@vue/composition-api'
+  import HelloWorld from './components/HelloWorld.vue'
 
-export default defineComponent({
-  name: 'App',
-  components: { HelloWorld },
-})
+  export default defineComponent({
+    name: 'App',
+    components: { HelloWorld },
+  })
 </script>
 <script setup>
-import { ref } from '@vue/composition-api'
+  import { ref } from '@vue/composition-api'
 
-const count = ref(0)
-const countAdd = () => {
-  count.value++
-}
+  const count = ref(0)
+  const countAdd = () => {
+    count.value++
+  }
 </script>
 ```
 

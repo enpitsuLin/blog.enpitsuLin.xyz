@@ -20,7 +20,7 @@ draft: true
 
 其实既然使用了 原子化CSS 的技术方案, 肯定还是 headless 的组件库来自己撸所有的交互组件。
 
-正好在早前了解到了 [zag.js](https://zagjs.com/) , 提供底层的状态机描述 UI 的变化而不是提供组件, 这样就可以与原子化CSS的解决方案组合的同时支持不同的框架—— Vue,React,Solid 均支持, 如果对 headless ui 感兴趣的可以多了解了解, 也是原先 React 第三大 UI 库 [chakra-ui](https://github.com/chakra-ui) 的作者的新作品 
+正好在早前了解到了 [zag.js](https://zagjs.com/) , 提供底层的状态机描述 UI 的变化而不是提供组件, 这样就可以与原子化CSS的解决方案组合的同时支持不同的框架—— Vue,React,Solid 均支持, 如果对 headless ui 感兴趣的可以多了解了解, 也是原先 React 第三大 UI 库 [chakra-ui](https://github.com/chakra-ui) 的作者的新作品
 
 ## 设计方面
 

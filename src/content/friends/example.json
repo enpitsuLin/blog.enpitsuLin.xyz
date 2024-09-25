@@ -2,7 +2,7 @@
   "$schema": "../schema/friends.json",
   "title": "example",
   "url": "https://github.com",
-  "description":"example site description",
+  "description": "example site description",
   "favicon": {
     "light": "https://github.githubassets.com/favicons/favicon.png",
     "dark": "https://github.githubassets.com/favicons/favicon-dark.png"

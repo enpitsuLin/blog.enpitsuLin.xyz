@@ -1,24 +1,23 @@
-import type { MarkdownHeading } from 'astro';
-import type { Link, List, Paragraph, Text } from 'mdast';
-import { For, createEffect, createSignal, type Component } from 'solid-js';
+import type { MarkdownHeading } from 'astro'
+import { type Component, createEffect, createSignal, For } from 'solid-js'
 
 interface TocItem extends MarkdownHeading {
-  children: TocItem[];
+  children: TocItem[]
 }
 
 interface TocOpts {
-  maxHeadingLevel?: number | undefined;
-  minHeadingLevel?: number | undefined;
+  maxHeadingLevel?: number | undefined
+  minHeadingLevel?: number | undefined
 }
 
 /** Inject a ToC entry as deep in the tree as its `depth` property requires. */
 function injectChild(items: TocItem[], item: TocItem): void {
-  const lastItem = items.at(-1);
+  const lastItem = items.at(-1)
   if (!lastItem || lastItem.depth >= item.depth) {
-    items.push(item);
-  } else {
-    injectChild(lastItem.children, item);
-    return;
+    items.push(item)
+  }
+  else {
+    injectChild(lastItem.children, item)
   }
 }
 
@@ -29,64 +28,66 @@ export function generateToc(
   // by default this ignores/filters out h1 and h5 heading(s)
   const bodyHeadings = headings.filter(
     ({ depth }) => depth >= minHeadingLevel && depth <= maxHeadingLevel,
-  );
-  const toc: Array<TocItem> = [];
+  )
+  const toc: Array<TocItem> = []
 
-  for (const heading of bodyHeadings) injectChild(toc, { ...heading, children: [] });
+  for (const heading of bodyHeadings) injectChild(toc, { ...heading, children: [] })
 
-  return toc;
+  return toc
 }
 
 function useActiveId(itemIds: string[]) {
-  const [activeId, setActiveId] = createSignal(``);
+  const [activeId, setActiveId] = createSignal(``)
   createEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
+            setActiveId(entry.target.id)
           }
-        });
+        })
       },
-      { rootMargin: `0% 0% -90% 0%` }
-    );
+      { rootMargin: `0% 0% -90% 0%` },
+    )
     itemIds.forEach((id) => {
-      const element = document.getElementById(id);
+      const element = document.getElementById(id)
       if (element) {
-        observer.observe(element);
+        observer.observe(element)
       }
-    });
+    })
     return () => {
       itemIds.forEach((id) => {
-        const element = document.getElementById(id);
+        const element = document.getElementById(id)
         if (element) {
-          observer.unobserve(element);
+          observer.unobserve(element)
         }
-      });
-    };
-  }, [itemIds]);
-  return activeId;
+      })
+    }
+  }, [itemIds])
+  return activeId
 }
 
 const TocHeading: Component<{ toc: TocItem, activeSlug: string }> = (props) => {
   return (
     <li
       classList={{
-        'ml-2': props.toc.depth > 2
+        'ml-2': props.toc.depth > 2,
       }}
     >
       <a
         aria-label={`Scroll to section: ${props.toc.text}`}
-        class="block line-clamp-2 hover:text-neutral"
+        class="line-clamp-2 block hover:text-neutral"
         classList={{
           'mt-3': props.toc.depth <= 2,
-          "mt-3 text-0.75rem": props.toc.depth > 2,
-          "text-neutral-700 dark:text-neutral": props.activeSlug === props.toc.slug
+          'mt-3 text-0.75rem': props.toc.depth > 2,
+          'text-neutral-700 dark:text-neutral': props.activeSlug === props.toc.slug,
         }}
         href={`#${props.toc.slug}`}
       >
-        <span class='mr-0.5'></span>
-        # {props.toc.text}
+        <span class="mr-0.5"></span>
+        #
+        {' '}
+        {props.toc.text}
       </a>
       {!!props.toc.children && (
         <ul>
@@ -100,42 +101,42 @@ const TocHeading: Component<{ toc: TocItem, activeSlug: string }> = (props) => {
 }
 
 export const PostToc: Component<{ headings: MarkdownHeading[] }> = (props) => {
-  let containerRef: HTMLDivElement | undefined;
+  let containerRef: HTMLDivElement | undefined
 
-  const [maxWidth, setMaxWidth] = createSignal(0);
+  const [maxWidth, setMaxWidth] = createSignal(0)
 
   createEffect(() => {
     if (containerRef) {
       setMaxWidth(
-        (window.innerWidth - (containerRef?.parentElement?.clientWidth || 0)) /
-        2 -
-        40
-      );
+        (window.innerWidth - (containerRef?.parentElement?.clientWidth || 0))
+        / 2
+        - 40,
+      )
     }
-  });
+  })
 
   const toc = generateToc(props.headings)
-  const activeSlug = useActiveId(props.headings.map(i => i.slug));
+  const activeSlug = useActiveId(props.headings.map(i => i.slug))
 
   return (
     <div
       ref={containerRef}
-      class="absolute left-full pl-10 h-full top-0"
+      class="absolute left-full top-0 h-full pl-10"
       classList={{
         'hidden lg:block': maxWidth() > 40,
-        hidden: maxWidth() < 40
+        'hidden': maxWidth() < 40,
       }}
       style={{
-        'max-width': maxWidth() > 40 ? maxWidth() + 'px' : 0
+        'max-width': maxWidth() > 40 ? `${maxWidth()}px` : 0,
       }}
     >
-      <div class="sticky top-14 text-sm truncate leading-loose">
+      <div class="sticky top-14 truncate text-sm leading-loose">
         <ul class="mt-4 text-xs">
           <For each={toc}>
-            {(item) => <TocHeading toc={item} activeSlug={activeSlug()} />}
+            {item => <TocHeading toc={item} activeSlug={activeSlug()} />}
           </For>
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}

@@ -6,7 +6,7 @@
   --e-scrollbar-hover: #999999;
   /* extends unocss typography */
   --un-prose-bg-soft: theme('colors.neutral.200');
-  --un-prose-borders: theme('colors.neutral.200')
+  --un-prose-borders: theme('colors.neutral.200');
 }
 
 .dark {
@@ -15,7 +15,7 @@
   --e-scrollbar-hover: #8e9195;
   /* extends unocss typography */
   --un-prose-bg-soft: theme('colors.neutral.500');
-  --un-prose-borders: theme('colors.neutral.500')
+  --un-prose-borders: theme('colors.neutral.500');
 }
 
 html {

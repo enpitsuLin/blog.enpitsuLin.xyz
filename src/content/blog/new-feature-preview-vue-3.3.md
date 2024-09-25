@@ -14,37 +14,36 @@ Vue[一直以来](https://github.com/vuejs/core/issues/3102)都是没办法很�
 首先是面向TSX用户为`defineComponent` 工具函数增加了泛型支持，当参数传入一个泛型函数时类型会提示正常，比如我们可以基于这个特性使用tsx简单构造一个表格组件
 
 ```tsx
-import { defineComponent } from 'vue';
+import { defineComponent } from 'vue'
 
-type Props<T> = { data: T[]; columns: { label: string; field: keyof T }[] };
+interface Props<T> { data: T[], columns: { label: string, field: keyof T }[] }
 
 const Table = defineComponent(<T,>(props: Props<T>) => {
   return () => (
     <table>
       <thead>
         <tr>
-          {props.columns?.map((item) => (
+          {props.columns?.map(item => (
             <th>{item.label}</th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {props.data?.map((row) =>
-          props.columns?.map((column) => <td>{row[column.field]}</td>)
+        {props.data?.map(row =>
+          props.columns?.map(column => <td>{row[column.field]}</td>)
         )}
       </tbody>
     </table>
-  );
-});
+  )
+})
 
 export default Object.assign(Table, {
   name: 'GenericsTableTsx',
   props: ['columns', 'data']
-});
+})
 ```
 
 但是值得注意的是我们仍需要为这个组件传入`props`属性，否则在使用的时候会将应该是`props`的的属性挂载到`$attrs`上，这点其实基本上杜绝了这样的用法，所以说仅仅只是类型正确，不太推荐生产用这样的方法构建泛型组件。
-
 
 ### SFC泛型组件支持
 
@@ -88,7 +87,6 @@ export default Object.assign(Table, {
 
 > 评价: 很强的新特性，vue终于有泛型组件了真的是可喜可贺，就是对于TSX的支持还是需要额外增加props属性比较麻烦，这个问题也是比较久远的了，希望vue团队以后在为TSX的开发体验提升上努努力
 
-
 ## defineProps 宏支持引入的类型
 
 [这个需求](https://github.com/vuejs/core/issues/4294)已经2年过去了，不过大部分开发者都有使用一些社区插件来达到这个用法，现在官方终于提供了，在3.3我们可以轻松的使用外部导入的类型创建`Props`
@@ -101,7 +99,6 @@ const props = defineProps<{ data: SomeType }>()
 </script>
 ```
 
-
 > 评价: 众望所归，更方便的管理在Vue项目中的类型，不需要再在SFC中写又臭又长的类型体操了
 
 ## defineEmits 宏更简便的写法
@@ -111,7 +108,7 @@ const props = defineProps<{ data: SomeType }>()
 ```typescript
 defineEmits<{
   (e: 'foo', id: string): void
-  (e: 'bar',...args: any[]): void
+  (e: 'bar', ...args: any[]): void
 }>()
 ```
 
@@ -133,16 +130,16 @@ defineEmits<{
 ```typescript
 // 默认的model (通过 `v-model`)
 const modelValue = defineModel()
-   // ^? Ref<any>
+// ^? Ref<any>
 modelValue.value = 10
 
-const modelValue = defineModel<string>() //增加类型
-   // ^? Ref<string | undefined>
-modelValue.value = "hello"
+const modelValue = defineModel<string>() // 增加类型
+// ^? Ref<string | undefined>
+modelValue.value = 'hello'
 
-// 带有设置的默认model, 要求非undefined 
+// 带有设置的默认model, 要求非undefined
 const modelValue = defineModel<string>({ required: true })
-   // ^? Ref<string>
+// ^? Ref<string>
 
 // 特定名称的model (通过 `v-model:count` )
 const count = defineModel<number>('count')
@@ -150,7 +147,7 @@ count.value++
 
 // 具有默认值的特定名称的model
 const count = defineModel<number>('count', { default: 0 })
-   // ^? Ref<number>
+// ^? Ref<number>
 
 // 本地作用域可变的 model, 顾名思义
 // 可以不需要父组件传递v-model
@@ -169,7 +166,7 @@ export default {
   emits: ['update:modelValue'],
   setup(props) {
     const modelValue = useModel(props, 'modelValue')
-       // ^? Ref<number>
+    // ^? Ref<number>
 
     return { modelValue }
   }
@@ -184,7 +181,7 @@ export default {
 
 本来Vue如果你需要在`<script setup>`中定义一些原先`Option Api`的属性比如`inheritAttrs/name`是需要创建一个`<script>`单独导出这两个属性的，现在有了`defineOptions`就可以省去这一步骤
 
-```vue 
+```vue
 <script setup>
 // 一些代码
 </script>
@@ -192,20 +189,19 @@ export default {
 export default {
   name: "ComponentName"
 }
-</script> 
+</script>
 ```
 
-```vue 
+```vue
 <script setup>
 defineOptions({
   name: "ComponentName"
 })
 // 一些代码
-</script> 
+</script>
 ```
 
 > 评价: 这个特性可以在[`Vue Macro`](https://vue-macros.sxzz.moe/macros/define-options.html)使用到，先行体验，反正我是用上了很爽
-
 
 ## defineSlots 宏以及 slots 属性
 
@@ -218,11 +214,11 @@ import { SlotsType } from 'vue'
 
 export default defineComponent({
   slots: Object as SlotsType<{
-    default: { foo: string; bar: number }
+    default: { foo: string, bar: number }
     item: { data: number }
   }>,
   setup(props, { slots }) {
-    expectType<undefined | ((scope: { foo: string; bar: number }) => any)>(
+    expectType<undefined | ((scope: { foo: string, bar: number }) => any)>(
       slots.default
     )
     expectType<undefined | ((scope: { data: number }) => any)>(slots.item)
@@ -231,6 +227,7 @@ export default defineComponent({
 ```
 
 对于这个定义的组件`SlotComponent`，再组件中使用的话就是
+
 ```vue
 <template>
   <SlotComponent>
@@ -249,7 +246,7 @@ export default defineComponent({
 ```typescript
 // 与 对象语法表现一致，谢谢ES没有将default当属性关键词 可喜可贺可喜可贺😆
 const slots = defineSlots<{
-  default(props: { foo: string; bar: number }): any // or VNode[]
+  default: (props: { foo: string, bar: number }) => any // or VNode[]
 }>()
 ```
 
@@ -260,7 +257,6 @@ const slots = defineSlots<{
 突然的调试可能会用到的`console.log`但是在模板中不好使，现在3.3加上了额外支持，不需要再自己为模板作用域增加一个函数来打印东西了
 
 > 评价: 无伤大雅，提升DX，偶尔会用到会感觉很舒服
-
 
 ## 不太重要的特性
 
@@ -296,7 +292,7 @@ app.provide('foo', 1)
 app.runWithContext(() => inject('foo')) // should return 1
 ```
 
-### hasInjectionContext 
+### hasInjectionContext
 
 `hasInjectionContext`这是面向基于vue的库作者用于检查是否可以使用`inject()`的工具，如果当前环境可以使用就返回true，不可以的环境其实就是setup外了，库作者使用该函数可以省去额外对当前环境的检测。
 

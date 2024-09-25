@@ -1,4 +1,4 @@
-import type { MarkdownHeading } from "astro";
+import type { MarkdownHeading } from 'astro'
 
 export interface Toc extends MarkdownHeading {
   children: MarkdownHeading[]
@@ -7,6 +7,6 @@ export interface Toc extends MarkdownHeading {
 export function buildToc(headings: MarkdownHeading[]) {
   return {
     headings,
-    toc: {} as Toc
+    toc: {} as Toc,
   }
 }

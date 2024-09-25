@@ -1,4 +1,4 @@
-import { getCollection, getEntryBySlug } from 'astro:content';
+import { getCollection, getEntryBySlug } from 'astro:content'
 
 interface ContentOptions {
   limit?: number
@@ -8,36 +8,35 @@ interface ContentOptions {
 const blogCollection = await getCollection('blog')
   .then(res => res.filter(p => !p.data.draft).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()))
 
-export const usePost = async (slug: string) => {
+export async function usePost(slug: string) {
   const entry = await getEntryBySlug('blog', slug)
   return entry
-};
+}
 
-export const usePosts = (option?: ContentOptions) => {
+export function usePosts(option?: ContentOptions) {
   return [...blogCollection]
-    .slice(option?.skip ?? 0,
-      option?.limit ? (option?.skip ?? 0 + option?.limit) : undefined)
-};
+    .slice(option?.skip ?? 0, option?.limit ? (option?.skip ?? 0 + option?.limit) : undefined)
+}
 
-export const usePostsSlug = () => {
+export function usePostsSlug() {
   return blogCollection.map(item => item.slug)
-};
+}
 
 export const usePostsCount = () => blogCollection.length + 1
 
-export const useAllTags = () => {
+export function useAllTags() {
   return Array.from(
-    new Set(blogCollection.map((post) => post.data.tags).
-      filter(Boolean as unknown as ((a: string[] | undefined) => a is string[])).flat()
-    )
+    new Set(blogCollection.map(post => post.data.tags)
+      .filter(Boolean as unknown as ((a: string[] | undefined) => a is string[]))
+      .flat(),
+    ),
   )
-};
+}
 
-export const usePostsByTag = (tag: string) => {
+export function usePostsByTag(tag: string) {
   return blogCollection.filter(item => item.data.tags?.includes(tag))
-};
+}
 
-export const useArchives = () => {
+export function useArchives() {
   return blogCollection
-};
- 
+}

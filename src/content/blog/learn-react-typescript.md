@@ -52,6 +52,6 @@ Class 组件可能在某些场合还是很有必要存在的所以还是要注�
 
 ```typescript
 class SomeComponent extends Component<Props, State> {
-  ///...
+  /// ...
 }
 ```

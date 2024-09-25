@@ -9,7 +9,7 @@ excerpt: 在 Github 的时间线上看到了一个自称是世界上最小的响
 
 :::div{.flex.justify-center}
 
-  https://github.com/vanjs-org/van
+https://github.com/vanjs-org/van
 :::
 
 简单预览了一下，发现确实很小，而且很适合研究它的底层实现方式，虽然代码风格过于极简主义导致可读性比较差(作者本人也[指出](https://vanjs.org/about#coding-style))
@@ -32,22 +32,24 @@ excerpt: 在 Github 的时间线上看到了一个自称是世界上最小的响
 
 ```javascript
 // name形参实际上是解构的 properties name, ...args 才是最终实际上使用的函数参数
-let tags = new Proxy((name, ...args) => {
+const tags = new Proxy((name, ...args) => {
   // 由于允许不传标签 props/attrs 所以处理下使props有一个值
-  let [props, ...children] = protoOf(args[0] ?? 0) === objProto ? args : [{}, ...args]
-  let dom = document.createElement(name)
+  const [props, ...children] = protoOf(args[0] ?? 0) === objProto ? args : [{}, ...args]
+  const dom = document.createElement(name)
   Obj.entries(props).forEach(([k, v]) => {
     // 设置dom propeties 或者 attributes, 其实这里判断 undefined 的方法是有明显bug的, 永远会走 falsy 的情况
-    let setter = dom[k] !== _undefined ? v => dom[k] = v : v => dom.setAttribute(k, v)
+    const setter = dom[k] !== _undefined ? v => dom[k] = v : v => dom.setAttribute(k, v)
     // 处理 vanjs 的响应式 state
-    if (protoOf(v) === stateProto) bind(v, v => (setter(v), dom))
-    else if (protoOf(v) === objProto) bind(...v["deps"], (...deps) => (setter(v["f"](...deps)), dom))
+    if (protoOf(v) === stateProto)
+      bind(v, v => (setter(v), dom))
+    else if (protoOf(v) === objProto)
+      bind(...v.deps, (...deps) => (setter(v.f(...deps)), dom))
     else setter(v)
   })
   return add(dom, ...children)
-}, {get: (tag, name) => 
+}, { get: (tag, name) =>
   // bind 处理掉 name 参数,实际上 target 的第一个参数变成了使用到的 property name
-  tag.bind(_undefined, name)})
+  tag.bind(_undefined, name) })
 ```
 
 :small[PS: 说实话这个 tags 内部的类型是真的不可能直出**正确类型**的,把源码扩展和加类型标注来阅读的时候,遇到这样的情况真的第一次让我感觉 TypeScript 是有缺陷的,想看扩展后和进行标注的代码放在文末 gist 链接]
@@ -67,13 +69,14 @@ vanjs 提供了 state 函数来提供状态,其实本质就是实现一个响应
 所以这里就有个缺陷,就是 state 的响应式只是浅层的,就类似于 vue3 的 `shallowRef`, 必须通过修改 `State.val` 才会触发
 
 首先是定义了 `stateProto` 作为state的原型
-```javascript
-let stateProto = {
-  get "val"() { return this._val },
 
-  set "val"(value) {
+```javascript
+const stateProto = {
+  get val() { return this._val },
+
+  set val(value) {
     // Aliasing `this` to reduce the bundle size.
-    let self = this, currentVal = self._val
+    const self = this; const currentVal = self._val
     if (value !== currentVal) {
       if (self.oldVal === currentVal)
         changedStates = addAndScheduleOnFirst(changedStates, self, updateDoms)
@@ -84,7 +87,7 @@ let stateProto = {
     }
   },
 
-  "onnew"(listener) { this.listeners.push(listener) },
+  onnew(listener) { this.listeners.push(listener) },
 }
 ```
 
@@ -93,12 +96,13 @@ let stateProto = {
 ```ts
 interface State<T = any> {
   val: T
-  onnew(l: (val: T, oldVal: T) => void): void
+  onnew: (l: (val: T, oldVal: T) => void) => void
 }
 ```
+
 如果用 class 来写应该大多数人会直接 `class StateImpl implements State` 但是vanjs 为了极致的 size 没有选择 class (实际上几个 minor 之前还是class :satisfied:)
 
-vanjs是怎么做的呢, 其实很简单直接用个对象字面量以及将其__proto__指向这个`stateProto`就ok了,显著减少代码体积
+vanjs是怎么做的呢, 其实很简单直接用个对象字面量以及将其**proto**指向这个`stateProto`就ok了,显著减少代码体积
 
 :small[PS:如果有手写过原型链的朋友应该很熟悉这样的写法,但是脱离了构造函数而是直接对象字面量和__proto__属性 ~~不过这里使用`Object.create` w/ `Object.assgin`可能会得到一点点性能提升XD~~]
 
@@ -109,15 +113,14 @@ vanjs 提供了[`bind`](https://vanjs.org/tutorial#api-bind)函数来将状态�
 :small[PS:我给vanjs贡献的就是这个函数的签名类型,简单的跳了个类型体操解决原先手写10个函数重载但实际上还是不够用的的签名:grin:]
 
 ```javascript
-let bind = (...deps) => {
-  let [func] = deps.splice(-1, 1)
-  let result = func(...deps.map(d => d._val))
-  if (result == _undefined) return []
-  let binding = {_deps: deps, dom: toDom(result), func}
-  deps.forEach(s => {
-    statesToGc = addAndScheduleOnFirst(statesToGc, s,
-      () => (statesToGc.forEach(filterBindings), statesToGc = _undefined),
-      bindingGcCycleInMs)
+function bind(...deps) {
+  const [func] = deps.splice(-1, 1)
+  const result = func(...deps.map(d => d._val))
+  if (result == _undefined)
+    return []
+  const binding = { _deps: deps, dom: toDom(result), func }
+  deps.forEach((s) => {
+    statesToGc = addAndScheduleOnFirst(statesToGc, s, () => (statesToGc.forEach(filterBindings), statesToGc = _undefined), bindingGcCycleInMs)
     s.bindings.push(binding)
   })
   return binding.dom
@@ -151,7 +154,7 @@ set "val"(value) {
 
 那么副作用的实际执行逻辑其实就是在 `updateDoms`
 
-***
+---
 
 但是`else if`的分支是干什么的呢?
 
@@ -166,16 +169,17 @@ set "val"(value) {
 ### 执行副作用
 
 ```javascript
-let updateDoms = () => {
-  let changedStatesArray = [...changedStates]
+function updateDoms() {
+  const changedStatesArray = [...changedStates]
   changedStates = _undefined
-  new Set(changedStatesArray.flatMap(filterBindings)).forEach(b => {
-    let {_deps, dom, func} = b
-    let newDom = func(..._deps.map(d => d._val), dom, ..._deps.map(d => d.oldVal))
+  new Set(changedStatesArray.flatMap(filterBindings)).forEach((b) => {
+    const { _deps, dom, func } = b
+    const newDom = func(..._deps.map(d => d._val), dom, ..._deps.map(d => d.oldVal))
     // 元素引用不同则视作dom变化 其实vanjs比较推荐直接修改一个元素引用的prop/attrs的 毕竟没有什么vdom
-    if (newDom !== dom)
+    if (newDom !== dom) {
       if (newDom != _undefined)
         dom.replaceWith(b.dom = toDom(newDom)); else dom.remove(), b.dom = _undefined
+    }
   })
   changedStatesArray.forEach(s => s.oldVal = s._val)
 }

@@ -1,10 +1,10 @@
 {
   "name": "blog",
-  "private": true,
   "type": "module",
   "version": "0.0.1",
-  "license": "MIT",
+  "private": true,
   "packageManager": "pnpm@9.11.0",
+  "license": "MIT",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -24,6 +24,7 @@
     "solid-js": "^1.9.1"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^3.7.1",
     "@astrojs/mdx": "^3.1.7",
     "@astrojs/node": "^8.3.4",
     "@astrojs/rss": "^4.0.7",
@@ -33,16 +34,14 @@
     "@iconify-json/ri": "^1.2.0",
     "@types/hast": "^3.0.4",
     "@types/mdast": "^4.0.4",
-    "@typescript-eslint/eslint-plugin": "^8.7.0",
-    "@typescript-eslint/parser": "^8.7.0",
+    "@unocss/eslint-plugin": "^0.62.4",
     "@unocss/reset": "^0.62.4",
     "astro-eslint-parser": "^1.0.3",
     "eslint": "^9.11.1",
     "eslint-plugin-astro": "^1.2.4",
+    "eslint-plugin-format": "^0.1.2",
     "hastscript": "^9.0.0",
     "mdast-util-toc": "^7.1.0",
-    "prettier": "^3.3.3",
-    "prettier-plugin-astro": "^0.14.1",
     "refractor": "^4.8.1",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-prism-diff": "^1.1.2",
@@ -53,7 +52,7 @@
     "remark-directive-rehype": "^0.4.2",
     "remark-emoji": "^5.0.1",
     "remark-flexible-code-titles": "^1.2.0",
-    "typescript": "^5.6.2",
+    "typescript": "5.5.4",
     "unified": "^11.0.5",
     "unocss": "^0.62.4",
     "vfile": "^6.0.3"
